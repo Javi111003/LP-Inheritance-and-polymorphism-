@@ -1,0 +1,21 @@
+# Ignorar archivos de compilación de C#
+bin/
+obj/
+*.exe
+*.dll
+*.pdb
+
+# Ignorar archivos de compilación de Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar archivos de compilación de C++
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+*.dSYM/

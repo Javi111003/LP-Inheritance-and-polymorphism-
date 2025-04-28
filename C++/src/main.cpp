@@ -1,154 +1,114 @@
-# include <iostream>
-# include <stdlib.h>
-#include <vector>
+#include <iostream>
+#include <string>
 using namespace std;
 
-class Worker
-{
+class Persona {
 protected:
-    string Name;
-    float Salary;
+    string nombre;
+
 public:
-    Worker(string, float);
-    ~Worker() = default;  //Poner virtual en el destructor
-    virtual void CollectSalary() const = 0;
+    Persona(const string& nombre) : nombre(nombre) {}
+
+    virtual string toString() const {
+        return nombre;
+    }
 };
 
-Worker::Worker(string _name, float salary)
-{
-    Name = _name;
-    Salary = salary;
-}
-
-class Teacher : public Worker //Mostrar herencia virtual
-{
+class Recibidor {
 protected:
-    int Experience;
+    int horas_clase_alumno;
+
 public:
-    Teacher(string _name, float _salary, int _exp) : Worker(_name, _salary)
-    {
-        Experience = _exp;
-    }
-    void CollectSalary() const override
-    {
-        float bonus = 100.0 * Experience;
-        cout << "El Profesor "<<Name<<" cobra "<<Salary + bonus<<endl;
-    }
-    void Teach() const
-    {
-        cout <<"El Profesor "<<Name<<" imparte clases desde hace "<<Experience<< "años"<<endl;
+    Recibidor(int horas_clase_alumno) : horas_clase_alumno(horas_clase_alumno) {}
+
+    void RecibidorFunc() const {
+         cout << " recibe clases durante " << horas_clase_alumno << " horas." <<  endl;
     }
 };
 
-class Student : public Worker //mostrar herencia virtual
-{
+class Impartidor {
 protected:
-    string Faculty;
+    int horas_clase_profesor;
+
 public:
-    Student(string _name, float _salary, string _faculty) : Worker(_name, _salary)
-    {
-        Faculty = _faculty;
-    }
-    void CollectSalary() const override
-    {
-        cout << "El Alumno "<<Name<<" cobra "<<Salary<<endl;
-    }
-    void Learn() const
-    {
-        cout <<"El Alumno "<<Name<<" recibe clases en "<<Faculty<<endl;
+    Impartidor(int horas_clase_profesor) : horas_clase_profesor(horas_clase_profesor) {}
+
+    void ImpartidorFunc() const {
+         cout << " imparte clases durante " << horas_clase_profesor << " horas." <<  endl;
     }
 };
 
-class AssistanStudent : public Teacher, public Student
-{
-public:
-    AssistanStudent(string _name, float _salary, string _faculty, int _exp): 
-    //Worker(_name, _salary),
-    Teacher(_name, _salary, _exp),
-    Student(_name, _salary, _faculty){}
+class Plantilla {
+protected:
+    double salario;
 
-    void CollectSalary() const override
-    {
-        float bonus = Experience * 50;
-        cout<<"El alumno ayudante "<<Student::Name<<" cobra "<<Student::Salary + bonus<<endl;
-    }
-    void CompleteData()
-    {
-        Teach();
-        Learn();
-    }
-    void Teach()
-    {
-        cout <<"El Alumno Ayudante "<<Teacher::Name<<" imparte clases desde hace "<<Experience<< "años"<<endl;
-    }
-    void Learn()
-    {
-        cout <<"El Alumno "<<Student::Name<<" recibe clases en "<<Faculty<<endl;
+public:
+    Plantilla(double salario) : salario(salario) {}
+
+    void CobrarSalario() const {
+        cout << " cobra salario como trabajador: " << salario << endl;
     }
 };
 
-class TrainedTeacher : public Student
-{
+class Estudiante : public Persona, public Recibidor {
+private:
+    double estipendio;
+
 public:
-    void Learn()
-    {
-        cout<<"El Profesor "<<Name<<" aun recibe Preparacion"<<endl;
-    }
-    void Trainer()
-    {
-        cout<<"Falte a clases porque tenia que cocinar"<<endl;
+    Estudiante(const  string& nombre, int horas_clase_alumno, double estipendio)
+        : Persona(nombre), Recibidor(horas_clase_alumno), estipendio(estipendio) {}
+
+    void CobrarEstipendio() const {
+         cout << nombre << " cobra salario como estudiante: " << estipendio <<  endl;
     }
 };
 
-
-int main()
-{
-    // AssistanStudent as("Miguel", 200.0, "Matcom", 2);
-    // as.CollectSalary();
-    // as.CompleteData();
-
-    // //Polimorfismo
-    // Worker* workers[3];
-    // workers[0] = new Teacher("Carlos", 4000.0, 6);
-    // workers[1] = new Student("Javier", 200.0, "Matcom");
-    // //workers[2] = new AssistanStudent("Miguel", 200.0, "Matcom", 2);
-
-    // for(Worker* w : workers)
-    // {
-    //     w->CollectSalary();
-    //     delete w;
-    // }
-
-    //Casteo
-    // Worker* w1 = new Student("Kevin", 200, "Matcom");
-    // TrainedTeacher* tt = static_cast<TrainedTeacher*>(w1);
-    // tt->Trainer();
-
-    // Teacher* t = static_cast<Teacher*>(w1); 
-    // t->Teach();
-
-    // vector<Worker*> staff;
-    // staff.push_back(new Teacher("Yudivian", 6000, 8));
-    // staff.push_back(new Student("Kendry", 200, "Matcom"));
-    // staff.push_back(new AssistanStudent("Joel", 200, "Matcom", 2));
+class Trabajador : public Persona, public Plantilla {
+public:
+    Trabajador(const  string& nombre, double salario)
+        : Persona(nombre), Plantilla(salario) {}
     
-    // for (auto w : staff) {
-    //     w->CollectSalary();
-        
-    //     if (auto t = dynamic_cast<Teacher*>(w)) {
-    //         t->Teach();
-    //     }
-        
-    //     if (auto s = dynamic_cast<Student*>(w)) {
-    //         s->Learn();
-    //     }
-        
-    //     if (auto ta = dynamic_cast<AssistanStudent*>(w)) {
-    //         ta->CompleteData();
-    //     }
-    // }
-    
-    // // Limpieza
-    // for (auto w : staff) delete w;
+        void CobrarSalario() const {
+            cout << nombre << " cobra salario como trabajador: " << salario <<  endl;
+    }
+};
+
+class Profesor : public Trabajador, public Impartidor {
+public:
+    Profesor(const  string& nombre, int horas_clase_profesor, double salario)
+        : Trabajador(nombre, salario), Impartidor(horas_clase_profesor) {}
+};
+
+class AlumnoAyudante : public Estudiante, public Impartidor, public Plantilla {
+public:
+    AlumnoAyudante(const  string& nombre, int horas_clase_alumno, int horas_clase_profesor, double estipendio, double salario)
+        : Estudiante(nombre, horas_clase_alumno, estipendio), Impartidor(horas_clase_profesor), Plantilla(salario) {}
+};
+
+class ProfesorAdiestrado : public Profesor, public Recibidor {
+public:
+    ProfesorAdiestrado(const  string& nombre, int horas_clase_profesor, int horas_clase_alumno, double salario)
+        : Profesor(nombre, horas_clase_profesor, salario), Recibidor(horas_clase_alumno) {}
+};
+
+int main() {
+    Persona persona("Juan");
+    Estudiante estudiante("Maria", 20, 500);
+    Trabajador trabajador("Pedro", 1000);
+    Profesor profesor("Ana", 30, 1500);
+    AlumnoAyudante alumno_ayudante("Carlos", 15, 10, 300, 1200);
+    ProfesorAdiestrado profesor_adiestrado("Laura", 25, 5, 1300);
+
+    alumno_ayudante.Plantilla::CobrarSalario();
+    estudiante.CobrarEstipendio();
+    trabajador.CobrarSalario();
+    profesor.ImpartidorFunc();
+    alumno_ayudante.CobrarEstipendio();
+    alumno_ayudante.CobrarSalario();
+    profesor_adiestrado.ImpartidorFunc();
+    profesor_adiestrado.CobrarSalario();
+    profesor_adiestrado.RecibidorFunc();
+    profesor_adiestrado.ImpartidorFunc();
+
     return 0;
 }
